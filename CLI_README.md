@@ -21,13 +21,13 @@ pip install -r requirements.txt
 
 ```bash
 # 设置 app_id
-python feishu.py config set app_id cli_xxx
+python scripts/feishu.py config set app_id cli_xxx
 
 # 设置 app_secret
-python feishu.py config set app_secret xxx
+python scripts/feishu.py config set app_secret xxx
 
 # 查看所有配置
-python feishu.py config list
+python scripts/feishu.py config list
 ```
 
 配置文件保存在 `~/.feishu_config.json`
@@ -38,29 +38,29 @@ python feishu.py config list
 
 ```bash
 # 列出根目录文件
-python feishu.py drive list
+python scripts/feishu.py drive list
 
 # 列出指定文件夹的文件
-python feishu.py drive list --parent-token <token>
+python scripts/feishu.py drive list --parent-token <token>
 
 # 按修改时间排序，显示 10 个
-python feishu.py drive list --order-by EditedTime --limit 10
+python scripts/feishu.py drive list --order-by EditedTime --limit 10
 
 # 创建文件夹
-python feishu.py drive create-folder "新文件夹"
+python scripts/feishu.py drive create-folder "新文件夹"
 
 # 在指定位置创建文件夹
-python feishu.py drive create-folder "新文件夹" --parent-token <token>
+python scripts/feishu.py drive create-folder "新文件夹" --parent-token <token>
 ```
 
 ### 2. 文档操作
 
 ```bash
 # 创建文档
-python feishu.py doc create "文档标题"
+python scripts/feishu.py doc create "文档标题"
 
 # 在指定文件夹创建文档
-python feishu.py doc create "文档标题" --folder-token <token>
+python scripts/feishu.py doc create "文档标题" --folder-token <token>
 ```
 
 ### 3. 命令参考
@@ -76,46 +76,79 @@ python feishu.py doc create "文档标题" --folder-token <token>
 
 ## 快捷方式（可选）
 
-在 Unix/Linux/macOS 系统上，可以创建别名：
+### Unix/Linux/macOS
+
+创建别名：
 
 ```bash
 # 添加到 ~/.bashrc 或 ~/.zshrc
-alias feishu='python /path/to/feishu-skill/feishu.py'
+alias feishu='python /path/to/feishu-skill/scripts/feishu.py'
 
 # 使用
 feishu drive list
 feishu doc create "测试"
 ```
 
-在 Windows 上，可以创建批处理文件 `feishu.bat`：
+### Windows
+
+创建批处理文件 `feishu.bat` 并放到 PATH 目录：
 
 ```batch
 @echo off
-python C:\path\to\feishu-skill\feishu.py %*
+python C:\path\to\feishu-skill\scripts\feishu.py %*
+```
+
+或者创建 PowerShell 函数：
+
+```powershell
+# 添加到 $PROFILE
+function feishu {
+    python C:\path\to\feishu-skill\scripts\feishu.py $args
+}
 ```
 
 ## 开发
 
 ### 添加新命令
 
-1. 在 `feishu_cli/commands/` 下创建新模块
+1. 在 `scripts/feishu_cli/commands/` 下创建新模块
 2. 实现 `build_parser()` 函数
-3. 在 `feishu_cli/__main__.py` 中注册
+3. 在 `scripts/feishu_cli/__main__.py` 中注册
 
 ### 项目结构
 
 ```
 feishu-skill/
-├── feishu_cli/           # CLI 核心模块
-│   ├── __init__.py
-│   ├── __main__.py       # 主入口
-│   ├── config.py         # 配置管理
-│   ├── auth.py           # 认证逻辑
-│   └── commands/         # 命令模块
-│       ├── __init__.py
-│       ├── drive.py      # 云空间命令
-│       └── doc.py        # 文档命令
-├── scripts/              # 原始脚本（保留）
-├── feishu.py             # CLI 启动脚本
-└── requirements.txt
+├── scripts/                    # 所有脚本文件
+│   ├── feishu.py              # CLI 启动脚本
+│   ├── feishu_cli/            # CLI 核心模块
+│   │   ├── __init__.py
+│   │   ├── __main__.py        # 主入口
+│   │   ├── config.py          # 配置管理
+│   │   ├── auth.py            # 认证逻辑
+│   │   └── commands/          # 命令模块
+│   │       ├── __init__.py
+│   │       ├── drive.py       # 云空间命令
+│   │       └── doc.py         # 文档命令
+│   ├── list_files.py          # 原始脚本（保留）
+│   ├── create_folder.py       # 原始脚本（保留）
+│   ├── create_document.py     # 原始脚本（保留）
+│   └── ...                    # 其他脚本
+├── references/                # 参考文档
+├── CLI_README.md              # 本文档
+├── task_plan.md               # 开发计划
+└── requirements.txt           # 依赖清单
+```
+
+### 两种使用方式
+
+**方式一：CLI 命令（推荐）**
+```bash
+python scripts/feishu.py doc create "文档"
+```
+
+**方式二：直接运行脚本**
+```bash
+python scripts/create_document.py
+# 需要编辑脚本中的硬编码参数
 ```
