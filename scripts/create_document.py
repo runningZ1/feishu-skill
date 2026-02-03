@@ -69,26 +69,26 @@ def main():
     app_id = "cli_a98322b338ed5013"
     app_secret = "NWd2p5HIvmp7VsxRLpgvBfODcFt1d6py"
 
-    # 示例 1: 创建普通文档
-    # result = create_document(
-    #     app_id=app_id,
-    #     app_secret=app_secret,
-    #     title="测试文档"
-    # )
+    # 创建新文档用于测试
+    result = create_document(
+        app_id=app_id,
+        app_secret=app_secret,
+        title="测试文档 - 创建块功能"
+    )
 
-    # 示例 2: 在指定文件夹中创建文档
-    # result = create_document(
-    #     app_id=app_id,
-    #     app_secret=app_secret,
-    #     title="文件夹中的测试文档",
-    #     folder_token="FdElfqxkalxSqBdv7N2cjxFunOc"  # 文件夹 token
-    # )
+    if result:
+        document_id = result.document.document_id
+        print(f"\n✅ 文档创建成功！")
+        print(f"Document ID: {document_id}")
+        print(f"文档链接: https://my.feishu.cn/docx/{document_id}")
 
-    print("📝 文档创建脚本已准备就绪")
-    print("\n使用说明:")
-    print("1. 取消上面的示例代码注释")
-    print("2. 修改 title 为想要的文档标题")
-    print("3. 可选: 添加 folder_token 来指定创建位置")
+        print("\n" + "="*50)
+        print("📝 可以使用以下信息创建块:")
+        print(f'document_id = "{document_id}"')
+        print(f'block_id = "{document_id}"  # 通常使用 document_id 作为初始 block_id')
+        print("="*50)
+    else:
+        print("❌ 文档创建失败")
 
 
 if __name__ == "__main__":
