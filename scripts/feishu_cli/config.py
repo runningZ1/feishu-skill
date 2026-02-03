@@ -7,8 +7,15 @@ import os
 from pathlib import Path
 from typing import Optional
 
+try:
+    from dotenv import load_dotenv
+    HAS_DOTENV = True
+except ImportError:
+    HAS_DOTENV = False
+
 
 DEFAULT_CONFIG_PATH = Path.home() / ".feishu_config.json"
+ENV_PATH = Path(__file__).parent.parent.parent / ".env"
 
 
 class Config:
@@ -17,7 +24,13 @@ class Config:
     def __init__(self, config_path: Optional[Path] = None):
         self.config_path = config_path or DEFAULT_CONFIG_PATH
         self._config = {}
+        self._load_env()
         self._load_config()
+
+    def _load_env(self):
+        """加载 .env 文件"""
+        if HAS_DOTENV and ENV_PATH.exists():
+            load_dotenv(ENV_PATH)
 
     def _load_config(self):
         """加载配置文件"""
@@ -73,10 +86,14 @@ class Config:
     def validate_credentials(self) -> bool:
         """验证凭据是否完整"""
         if not self.app_id:
-            print("❌ 未配置 app_id，请运行: feishu config set app_id <your_app_id>")
+            print("❌ 未配置 app_id")
+            print("   方式1: 在项目根目录创建 .env 文件，添加 FEISHU_APP_ID=xxx")
+            print("   方式2: 运行 feishu config set app_id <your_app_id>")
             return False
         if not self.app_secret:
-            print("❌ 未配置 app_secret，请运行: feishu config set app_secret <your_app_secret>")
+            print("❌ 未配置 app_secret")
+            print("   方式1: 在项目根目录创建 .env 文件，添加 FEISHU_APP_SECRET=xxx")
+            print("   方式2: 运行 feishu config set app_secret <your_app_secret>")
             return False
         return True
 

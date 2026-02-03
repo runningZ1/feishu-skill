@@ -39,3 +39,6 @@ Thumbs.db
 
 # 测试结果（可选）
 references/test_results.md
+
+# 环境配置（含敏感信息）
+.env

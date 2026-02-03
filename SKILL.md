@@ -49,19 +49,38 @@ description: 飞书平台操作技能 - 提供文档、知识库、云空间的�
 | 文件统计 | `get_file_statistics.py` | 获取文件统计信息 |
 | 上传媒体 | `upload_media.py` | 上传图片/视频等媒体 |
 
-## CLI 工具
+## 配置
+
+### 方式一：.env 文件（推荐）
+
+在项目根目录创建 `.env` 文件：
 
 ```bash
-# 配置
+FEISHU_APP_ID=cli_a98322b338ed5013
+FEISHU_APP_SECRET=your_app_secret_here
+```
+
+### 方式二：CLI 命令
+
+```bash
 python scripts/feishu.py config set app_id <app_id>
 python scripts/feishu.py config set app_secret <app_secret>
+python scripts/feishu.py config list              # 查看配置
+```
 
-# 云空间
-python scripts/feishu.py drive list
-python scripts/feishu.py drive create-folder "新文件夹"
+## CLI 工具
 
-# 文档
-python scripts/feishu.py doc create "文档标题"
+### 文档操作
+
+```bash
+python scripts/feishu.py doc create "文档标题"     # 创建文档
+```
+
+### 云空间操作
+
+```bash
+python scripts/feishu.py drive list               # 列出文件
+python scripts/feishu.py drive create-folder "名称"  # 创建文件夹
 ```
 
 ## 资源目录
