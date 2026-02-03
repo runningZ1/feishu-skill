@@ -1,0 +1,41 @@
+# 开发计划文件
+task_plan.md
+
+# 技术文档索引（太大，不提交到仓库）
+references/飞书开放平台-技术文档-完整索引.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 测试结果（可选）
+references/test_results.md
