@@ -1,100 +1,81 @@
 """
 飞书 - 搜索文档
 
-通过搜索功能查找 Wiki 文档的 document_id
+注意：此功能需要应用有搜索权限，且搜索范围取决于应用配置
 """
 
-import json
+import argparse
+import os
 import requests
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    from feishu_cli.config import get_config
+except ImportError:
+    from _utils import get_config
 
 
 def get_tenant_access_token(app_id: str, app_secret: str) -> str:
-    """获取 tenant_access_token"""
     url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
-    response = requests.post(
-        url,
-        json={"app_id": app_id, "app_secret": app_secret}
-    )
-    return response.json().get("tenant_access_token")
+    response = requests.post(url, json={"app_id": app_id, "app_secret": app_secret})
+    data = response.json()
+    if data.get("code") != 0:
+        return None
+    return data.get("tenant_access_token")
 
 
-def search_documents(app_id: str, app_secret: str, query: str = "") -> dict:
-    """
-    搜索文档
-
-    Args:
-        app_id: 应用 ID
-        app_secret: 应用密钥
-        query: 搜索关键词
-
-    Returns:
-        dict: 搜索结果
-    """
+def search_documents(app_id: str, app_secret: str, query: str = ""):
     access_token = get_tenant_access_token(app_id, app_secret)
+    if not access_token:
+        return None
 
-    url = "https://open.feishu.cn/open-apis/docx/v1/documents/search"
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
-    }
-    body = {
-        "query": query,
-        "page_size": 10
-    }
+    # 使用搜索 API
+    url = "https://open.feishu.cn/open-apis/search/v2/message"
+    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+    body = {"query": query, "search_type": "doc", "page_size": 10}
 
     response = requests.post(url, headers=headers, json=body)
 
-    try:
-        result = response.json()
-        print(f"状态码: {response.status_code}")
-
-        if result.get("code") != 0:
-            print(f"❌ 搜索失败: {result.get('code')} - {result.get('msg')}")
-            print(f"详细信息: {json.dumps(result, indent=2, ensure_ascii=False)}")
-            return None
-
-        return result.get("data")
-    except Exception as e:
-        print(f"❌ 解析失败: {e}")
-        print(f"原始响应: {response.text}")
+    if response.status_code != 200:
+        print(f"❌ 搜索失败: HTTP {response.status_code}")
         return None
+
+    result = response.json()
+    if result.get("code") != 0:
+        print(f"❌ 搜索失败: {result.get('code')} - {result.get('msg')}")
+        return None
+
+    return result.get("data")
 
 
 def main():
-    """使用示例"""
-    # 配置应用凭据
-    app_id = "cli_a98322b338ed5013"
-    app_secret = "NWd2p5HIvmp7VsxRLpgvBfODcFt1d6py"
+    parser = argparse.ArgumentParser(
+        description="搜索飞书文档",
+        epilog="注意：此功能需要应用有搜索权限"
+    )
+    parser.add_argument("--query", "-q", default="", help="搜索关键词（留空获取最近文档）")
+    args = parser.parse_args()
 
-    print("🔍 正在搜索文档...")
+    config = get_config()
+    if not config.validate_credentials():
+        sys.exit(1)
 
-    # 搜索最近创建的文档
-    result = search_documents(app_id, app_secret, "")
+    print(f"🔍 正在搜索: {args.query or '全部'}...")
+
+    result = search_documents(config.app_id, config.app_secret, args.query)
 
     if result and result.get("items"):
-        print(f"\n✅ 找到 {len(result.get('items', []))} 个文档\n")
-
-        for idx, item in enumerate(result.get("items", [])[:5], 1):
-            title = item.get("title", "无标题")
-            doc_id = item.get("document_id", "")
-            print(f"{idx}. {title}")
-            print(f"   Document ID: {doc_id}")
-            print()
-
-        # 使用第一个文档
-        if result.get("items"):
-            first_doc = result.get("items")[0]
-            doc_id = first_doc.get("document_id")
-            print("="*50)
-            print("📝 可以使用以下 Document ID 创建块:")
-            print(f'document_id = "{doc_id}"')
-            print(f'block_id = "{doc_id}"')
-            print("="*50)
-            return doc_id
+        items = result.get("items", [])
+        print(f"✅ 找到 {len(items)} 个文档")
+        for item in items[:5]:
+            print(f"  - {item.get('title', '无标题')}: {item.get('document_id', '')}")
+        sys.exit(0)
     else:
-        print("❌ 未找到文档")
-
-    return None
+        print("❌ 未找到文档或搜索失败")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
