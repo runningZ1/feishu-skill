@@ -1,85 +1,76 @@
 ---
 name: feishu
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: 飞书平台操作技能 - 提供文档、知识库、云空间的完整操作能力。当用户需要操作飞书文档、管理知识库、处理云空间文件时使用此技能。
 ---
 
-# Feishu
+# 飞书技能
 
-## Overview
+## 概述
 
-[TODO: 1-2 sentences explaining what this skill enables]
+提供飞书开放平台 API 的完整操作能力，包括文档管理、知识库操作、云空间文件处理和媒体上传。
 
-## Structuring This Skill
+## 核心功能
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+### 1. 文档操作
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" → "Reading" → "Creating" → "Editing"
-- Structure: ## Overview → ## Workflow Decision Tree → ## Step 1 → ## Step 2...
+| 功能 | 脚本 | 说明 |
+|------|------|------|
+| 创建文档 | `create_document.py` | 创建新文档 |
+| 获取信息 | `get_document_info.py` | 获取文档元信息 |
+| 获取内容 | `get_document_raw_content.py` | 获取文档原始内容 |
+| 获取块列表 | `get_document_blocks.py` | 获取文档所有块 |
+| 搜索文档 | `search_documents.py` | 全文搜索文档 |
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" → "Merge PDFs" → "Split PDFs" → "Extract Text"
-- Structure: ## Overview → ## Quick Start → ## Task Category 1 → ## Task Category 2...
+### 2. 文档块操作
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" → "Colors" → "Typography" → "Features"
-- Structure: ## Overview → ## Guidelines → ## Specifications → ## Usage...
+| 功能 | 脚本 | 说明 |
+|------|------|------|
+| 创建块 | `create_block.py` | 创建文本/段落/列表等块 |
+| 更新块 | `update_block.py` | 更新块内容 |
+| 删除块 | `delete_block.py` | 删除指定块 |
+| 批量更新 | `batch_update_blocks.py` | 批量更新多个块 |
+| 获取子块 | `get_child_blocks.py` | 获取块的子块列表 |
+| 获取内容 | `get_block_content.py` | 获取块详细内容 |
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" → numbered capability list
-- Structure: ## Overview → ## Core Capabilities → ### 1. Feature → ### 2. Feature...
+### 3. 知识库操作
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+| 功能 | 脚本 | 说明 |
+|------|------|------|
+| 节点信息 | `get_wiki_node_info.py` | 获取Wiki节点元信息 |
+| 获取块 | `get_wiki_blocks_sdk.py` | 获取Wiki页面的所有块 |
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+### 4. 云空间操作
 
-## [TODO: Replace with the first main section based on chosen structure]
+| 功能 | 脚本 | 说明 |
+|------|------|------|
+| 列出文件 | `list_files.py` | 列出目录文件 |
+| 创建文件夹 | `create_folder.py` | 创建新文件夹 |
+| 文件信息 | `get_file_meta.py` | 获取文件元数据 |
+| 文件统计 | `get_file_statistics.py` | 获取文件统计信息 |
+| 上传媒体 | `upload_media.py` | 上传图片/视频等媒体 |
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+## CLI 工具
 
-## Resources
+```bash
+# 配置
+python scripts/feishu.py config set app_id <app_id>
+python scripts/feishu.py config set app_secret <app_secret>
 
-This skill includes example resource directories that demonstrate how to organize different types of bundled resources:
+# 云空间
+python scripts/feishu.py drive list
+python scripts/feishu.py drive create-folder "新文件夹"
+
+# 文档
+python scripts/feishu.py doc create "文档标题"
+```
+
+## 资源目录
 
 ### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
-
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
-
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
-
-**Note:** Scripts may be executed without loading into context, but can still be read by Claude for patching or environment adjustments.
+可执行的 Python 脚本，直接调用飞书 API 执行具体操作。
 
 ### references/
-Documentation and reference material intended to be loaded into context to inform Claude's process and thinking.
+飞书开放平台技术文档和 API 参考资料。
 
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
-
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Claude should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Claude produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
+### test/
+测试脚本，验证各项功能。
